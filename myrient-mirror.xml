@@ -8,7 +8,7 @@
   <Privileged>false</Privileged>
   <Support>https://github.com/soconnor0919/myrient-mirror/issues</Support>
   <Project>https://github.com/soconnor0919/myrient-mirror</Project>
-  <Overview>Automated Myrient mirror for Nintendo libraries (Filtered for USA sets).</Overview>
+  <Overview>Automated, robust Myrient mirror for Nintendo libraries.</Overview>
   <Category>Backup: Tools:</Category>
   <WebUI/>
   <TemplateURL/>
@@ -17,7 +17,7 @@
   <PostArgs/>
   <CPUset/>
   <DateInstalled/>
-  <Description>Automated Myrient mirror for Nintendo libraries (Filtered for USA sets).</Description>
+  <Description>Automated, robust Myrient mirror for Nintendo libraries.</Description>
   <Networking>
     <Mode>bridge</Mode>
     <Publish/>
@@ -29,7 +29,32 @@
       <Mode>rw</Mode>
     </Volume>
   </Data>
-  <Environment/>
+  <Environment>
+    <Variable>
+      <Value>NES,SNES,N64,GB,GBC,GBA,DS,GC,WII</Value>
+      <Name>SYNC_SYSTEMS</Name>
+      <Mode/>
+    </Variable>
+    <Variable>
+      <Value>.*\(USA\).*</Value>
+      <Name>REGION_FILTER</Name>
+      <Mode/>
+    </Variable>
+    <Variable>
+      <Value>30</Value>
+      <Name>WGET_TIMEOUT</Name>
+      <Mode/>
+    </Variable>
+    <Variable>
+      <Value>20</Value>
+      <Name>WGET_RETRIES</Name>
+      <Mode/>
+    </Variable>
+  </Environment>
   <Labels/>
   <Config Name="Backup Path" Target="/data" Default="/mnt/user/data/backups/nintendo" Mode="rw" Description="Path where mirrored files will be stored" Type="Path" Display="always" Required="true" Mask="false">/mnt/user/data/backups/nintendo</Config>
+  <Config Name="Systems to Sync" Target="SYNC_SYSTEMS" Default="NES,SNES,N64,GB,GBC,GBA,DS,GC,WII" Mode="" Description="Comma separated list of systems" Type="Variable" Display="always" Required="false" Mask="false">NES,SNES,N64,GB,GBC,GBA,DS,GC,WII</Config>
+  <Config Name="Region Filter" Target="REGION_FILTER" Default=".*\(USA\).*" Mode="" Description="Regex for file selection" Type="Variable" Display="always" Required="false" Mask="false">.*\(USA\).*</Config>
+  <Config Name="Timeout" Target="WGET_TIMEOUT" Default="30" Mode="" Description="Wget timeout in seconds" Type="Variable" Display="advanced" Required="false" Mask="false">30</Config>
+  <Config Name="Retries" Target="WGET_RETRIES" Default="20" Mode="" Description="Wget retry count" Type="Variable" Display="advanced" Required="false" Mask="false">20</Config>
 </Container>
