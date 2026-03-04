@@ -1,10 +1,8 @@
 #!/bin/sh
-export RCLONE_CONFIG_MYRIENT_TYPE=http
-export RCLONE_CONFIG_MYRIENT_URL=https://myrient.erista.me/files/
+BASE_URL="https://myrient.erista.me/files"
 
-# Exact escaped paths from Myrient
-SYSTEMS="
-No-Intro/Nintendo - Nintendo Entertainment System (Headerless)
+# List of systems to sync
+SYSTEMS="No-Intro/Nintendo - Nintendo Entertainment System (Headerless)
 No-Intro/Nintendo - Super Nintendo Entertainment System
 No-Intro/Nintendo - Nintendo 64 (BigEndian)
 No-Intro/Nintendo - Game Boy
@@ -16,18 +14,18 @@ Redump/Nintendo - Wii - NKit RVZ [zstd-19-128k]"
 
 echo "Starting Myrient Mirror Process..."
 
-echo "$SYSTEMS" | while read -r system; do
+IFS='
+'
+for system in $SYSTEMS; do
     [ -z "$system" ] && continue
     echo "---------------------------------------------------"
     echo "Syncing: $system"
     echo "---------------------------------------------------"
-    rclone copy "myrient:$system" "/data/$system" \
-        --include "*(USA)*" \
-        --multi-thread-streams 0 \
-        --transfers 1 \
-        --checkers 1 \
-        --stats 10s \
-        -vP
+    
+    wget -m -np -c -R "index.html*" \
+         --accept-regex ".*\(USA\).*" \
+         "$BASE_URL/$system/" \
+         -P /data/
 done
 
 echo "Mirroring Complete."
