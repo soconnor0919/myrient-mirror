@@ -8,6 +8,7 @@
   <Privileged>false</Privileged>
   <Support>https://github.com/soconnor0919/myrient-mirror/issues</Support>
   <Project>https://github.com/soconnor0919/myrient-mirror</Project>
+  <TemplateURL>https://raw.githubusercontent.com/soconnor0919/myrient-mirror/main/myrient-mirror.xml</TemplateURL>
   <Overview>Modern Download Manager for Myrient (with AriaNg Web UI).</Overview>
   <Category>Backup: Tools:</Category>
   <WebUI>http://[IP]:[PORT:8267]</WebUI>
