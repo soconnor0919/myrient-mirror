@@ -1,0 +1,7 @@
+services:
+  mirror:
+    build: .
+    container_name: myrient-mirror
+    volumes:
+      - /mnt/user/data/backups/nintendo:/data
+    restart: unless-stopped
