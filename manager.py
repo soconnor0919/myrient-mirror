@@ -15,6 +15,7 @@ def main():
     systems = os.getenv("SYNC_SYSTEMS", "NES,SNES,GB,GBC,GBA,DS,GC,WII").split(",")
     region_regex = os.getenv("REGION_FILTER", ".*\\(USA\\).*")
     base_url = "https://myrient.erista.me/files"
+    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36"}
     paths = {
         "NES": "No-Intro/Nintendo - Nintendo Entertainment System (Headerless)",
         "SNES": "No-Intro/Nintendo - Super Nintendo Entertainment System",
@@ -33,7 +34,7 @@ def main():
             url = f"{base_url}/{paths[sys]}/"
             print(f"Crawling {sys}...")
             try:
-                r = requests.get(url)
+                r = requests.get(url, headers=headers)
                 parser = MyrientParser()
                 parser.feed(r.text)
                 for filename in parser.files:
