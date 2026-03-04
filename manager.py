@@ -9,8 +9,9 @@ class MyrientParser(HTMLParser):
         if tag == "a":
             for name, value in attrs:
                 if name == "href":
-                    # Ignore navigation links
-                    if value.startswith("?") or value.startswith("/") or value == "../":
+                    # Myrient links are relative
+                    # Ignore navigation and root links
+                    if value.startswith("?") or value.startswith("/") or value in ["./", "../"]:
                         continue
                     self.files.append(value)
 
@@ -40,8 +41,12 @@ def main():
                 r = requests.get(url, headers=headers)
                 parser = MyrientParser()
                 parser.feed(r.text)
+                # Remove duplicates while preserving order
+                unique_links = []
                 for link in parser.files:
-                    # Decode link to check against regex
+                    if link not in unique_links: unique_links.append(link)
+                
+                for link in unique_links:
                     filename = urllib.parse.unquote(link)
                     if re.search(region_regex, filename):
                         f.write(f"{url}{link}\n  dir=/data/{sys}\n  out={filename}\n")
