@@ -2,9 +2,11 @@
 export RCLONE_CONFIG_MYRIENT_TYPE=http
 export RCLONE_CONFIG_MYRIENT_URL=https://myrient.erista.me/files/
 
-SYSTEMS="No-Intro/Nintendo - Nintendo Entertainment System
+# Exact escaped paths from Myrient
+SYSTEMS="
+No-Intro/Nintendo - Nintendo Entertainment System (Headerless)
 No-Intro/Nintendo - Super Nintendo Entertainment System
-No-Intro/Nintendo - Nintendo 64
+No-Intro/Nintendo - Nintendo 64 (BigEndian)
 No-Intro/Nintendo - Game Boy
 No-Intro/Nintendo - Game Boy Color
 No-Intro/Nintendo - Game Boy Advance
