@@ -1,0 +1,46 @@
+import os, re, requests
+from html.parser import HTMLParser
+
+class MyrientParser(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.files = []
+    def handle_starttag(self, tag, attrs):
+        if tag == "a":
+            for name, value in attrs:
+                if name == "href" and not value.startswith("?") and not value.startswith("/"):
+                    self.files.append(value)
+
+def main():
+    systems = os.getenv("SYNC_SYSTEMS", "NES,SNES,GB,GBC,GBA,DS,GC,WII").split(",")
+    region_regex = os.getenv("REGION_FILTER", ".*\\(USA\\).*")
+    base_url = "https://myrient.erista.me/files"
+    paths = {
+        "NES": "No-Intro/Nintendo - Nintendo Entertainment System (Headerless)",
+        "SNES": "No-Intro/Nintendo - Super Nintendo Entertainment System",
+        "N64": "No-Intro/Nintendo - Nintendo 64 (BigEndian)",
+        "GB": "No-Intro/Nintendo - Game Boy",
+        "GBC": "No-Intro/Nintendo - Game Boy Color",
+        "GBA": "No-Intro/Nintendo - Game Boy Advance",
+        "DS": "No-Intro/Nintendo - Nintendo DS (Decrypted)",
+        "GC": "Redump/Nintendo - GameCube - NKit RVZ [zstd-19-128k]",
+        "WII": "Redump/Nintendo - Wii - NKit RVZ [zstd-19-128k]"
+    }
+    with open("/tmp/aria2.queue", "w") as f:
+        for sys in systems:
+            sys = sys.strip()
+            if sys not in paths: continue
+            url = f"{base_url}/{paths[sys]}/"
+            print(f"Crawling {sys}...")
+            try:
+                r = requests.get(url)
+                parser = MyrientParser()
+                parser.feed(r.text)
+                for filename in parser.files:
+                    if re.search(region_regex, filename):
+                        f.write(f"{url}{filename}\n  dir=/data/{sys}\n  out={filename}\n")
+            except Exception as e:
+                print(f"Error crawling {sys}: {e}")
+
+if __name__ == "__main__":
+    main()

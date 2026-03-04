@@ -8,19 +8,29 @@
   <Privileged>false</Privileged>
   <Support>https://github.com/soconnor0919/myrient-mirror/issues</Support>
   <Project>https://github.com/soconnor0919/myrient-mirror</Project>
-  <Overview>Automated, robust Myrient mirror for Nintendo libraries.</Overview>
+  <Overview>Modern Download Manager for Myrient (with AriaNg Web UI).</Overview>
   <Category>Backup: Tools:</Category>
-  <WebUI/>
-  <TemplateURL/>
+  <WebUI>http://[IP]:[PORT:8267]</WebUI>
   <Icon>https://cdn-icons-png.flaticon.com/512/566/566311.png</Icon>
   <ExtraParams/>
   <PostArgs/>
   <CPUset/>
   <DateInstalled/>
-  <Description>Automated, robust Myrient mirror for Nintendo libraries.</Description>
+  <Description>Modern Download Manager for Myrient (with AriaNg Web UI).</Description>
   <Networking>
     <Mode>bridge</Mode>
-    <Publish/>
+    <Publish>
+      <Port>
+        <HostPort>8267</HostPort>
+        <ContainerPort>8267</ContainerPort>
+        <Protocol>tcp</Protocol>
+      </Port>
+      <Port>
+        <HostPort>6800</HostPort>
+        <ContainerPort>6800</ContainerPort>
+        <Protocol>tcp</Protocol>
+      </Port>
+    </Publish>
   </Networking>
   <Data>
     <Volume>
@@ -31,7 +41,7 @@
   </Data>
   <Environment>
     <Variable>
-      <Value>NES,SNES,N64,GB,GBC,GBA,DS,GC,WII</Value>
+      <Value>NES,SNES,GB,GBC,GBA,DS,GC,WII</Value>
       <Name>SYNC_SYSTEMS</Name>
       <Mode/>
     </Variable>
@@ -40,21 +50,10 @@
       <Name>REGION_FILTER</Name>
       <Mode/>
     </Variable>
-    <Variable>
-      <Value>30</Value>
-      <Name>WGET_TIMEOUT</Name>
-      <Mode/>
-    </Variable>
-    <Variable>
-      <Value>20</Value>
-      <Name>WGET_RETRIES</Name>
-      <Mode/>
-    </Variable>
   </Environment>
   <Labels/>
+  <Config Name="Web UI Port" Target="8267" Default="8267" Mode="tcp" Description="AriaNg Web Interface" Type="Port" Display="always" Required="true" Mask="false">8267</Config>
+  <Config Name="RPC Port" Target="6800" Default="6800" Mode="tcp" Description="Aria2 RPC Port" Type="Port" Display="always" Required="true" Mask="false">6800</Config>
   <Config Name="Backup Path" Target="/data" Default="/mnt/user/data/backups/nintendo" Mode="rw" Description="Path where mirrored files will be stored" Type="Path" Display="always" Required="true" Mask="false">/mnt/user/data/backups/nintendo</Config>
-  <Config Name="Systems to Sync" Target="SYNC_SYSTEMS" Default="NES,SNES,N64,GB,GBC,GBA,DS,GC,WII" Mode="" Description="Comma separated list of systems" Type="Variable" Display="always" Required="false" Mask="false">NES,SNES,N64,GB,GBC,GBA,DS,GC,WII</Config>
-  <Config Name="Region Filter" Target="REGION_FILTER" Default=".*\(USA\).*" Mode="" Description="Regex for file selection" Type="Variable" Display="always" Required="false" Mask="false">.*\(USA\).*</Config>
-  <Config Name="Timeout" Target="WGET_TIMEOUT" Default="30" Mode="" Description="Wget timeout in seconds" Type="Variable" Display="advanced" Required="false" Mask="false">30</Config>
-  <Config Name="Retries" Target="WGET_RETRIES" Default="20" Mode="" Description="Wget retry count" Type="Variable" Display="advanced" Required="false" Mask="false">20</Config>
+  <Config Name="Systems to Sync" Target="SYNC_SYSTEMS" Default="NES,SNES,GB,GBC,GBA,DS,GC,WII" Mode="" Description="Comma separated list of systems" Type="Variable" Display="always" Required="false" Mask="false">NES,SNES,GB,GBC,GBA,DS,GC,WII</Config>
 </Container>

@@ -1,62 +1,20 @@
 #!/bin/sh
 
-# Default Configuration
-SYNC_SYSTEMS="${SYNC_SYSTEMS:-NES,SNES,N64,GB,GBC,GBA,DS,GC,WII}"
-REGION_FILTER="${REGION_FILTER:-.*\(USA\).*}"
-WGET_TIMEOUT="${WGET_TIMEOUT:-30}"
-WGET_RETRIES="${WGET_RETRIES:-20}"
-LOG_FILE="/data/mirror.log"
+echo "Building queue..."
+python3 /manager.py
 
-BASE_URL="https://myrient.erista.me/files"
+echo "Starting Aria2 Engine with RPC..."
+# Start aria2 with RPC enabled for the Web UI
+# --enable-rpc: allows web UI control
+# --rpc-listen-all: allows external connections
+# -i: load our generated queue
+# -j: max concurrent downloads
+# -x: max connections per server
+aria2c --enable-rpc=true --rpc-listen-all=true --rpc-allow-origin-all=true \
+       --rpc-listen-port=6800 --dir=/data -j 5 -x 16 -s 16 \
+       --auto-file-renaming=false --continue=true \
+       -i /tmp/aria2.queue &
 
-# Map shortcuts to full Myrient paths
-get_path() {
-    case "$1" in
-        NES)  echo "No-Intro/Nintendo - Nintendo Entertainment System (Headerless)" ;;
-        SNES) echo "No-Intro/Nintendo - Super Nintendo Entertainment System" ;;
-        N64)  echo "No-Intro/Nintendo - Nintendo 64 (BigEndian)" ;;
-        GB)   echo "No-Intro/Nintendo - Game Boy" ;;
-        GBC)  echo "No-Intro/Nintendo - Game Boy Color" ;;
-        GBA)  echo "No-Intro/Nintendo - Game Boy Advance" ;;
-        DS)   echo "No-Intro/Nintendo - Nintendo DS (Decrypted)" ;;
-        GC)   echo "Redump/Nintendo - GameCube - NKit RVZ [zstd-19-128k]" ;;
-        WII)  echo "Redump/Nintendo - Wii - NKit RVZ [zstd-19-128k]" ;;
-        *)    echo "$1" ;; 
-    esac
-}
-
-log() {
-    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG_FILE"
-}
-
-log "Starting Enhanced Myrient Mirror..."
-log "Target Systems: $SYNC_SYSTEMS"
-log "Region Filter: $REGION_FILTER"
-
-# Split by comma
-OLD_IFS=$IFS
-IFS=','
-for sys in $SYNC_SYSTEMS; do
-    path=$(get_path "$sys")
-    log "---------------------------------------------------"
-    log "Processing: $sys ($path)"
-    log "---------------------------------------------------"
-
-    wget -m -np -c -R "index.html*" \
-         --accept-regex "$REGION_FILTER" \
-         --tries="$WGET_RETRIES" \
-         --timeout="$WGET_TIMEOUT" \
-         --waitretry=5 \
-         --retry-connrefused \
-         "$BASE_URL/$path/" \
-         -P /data/ 2>&1 | tee -a "$LOG_FILE"
-
-    if [ $? -eq 0 ]; then
-        log "Finished syncing $sys"
-    else
-        log "Warning: wget exited with non-zero status for $sys. Check log for details."
-    fi
-done
-IFS=$OLD_IFS
-
-log "Full Mirroring Process Complete."
+echo "Serving AriaNg Web UI on port 8267..."
+# Use a simple python http server for the static UI files
+cd /ui && python3 -m http.server 8267
