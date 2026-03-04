@@ -1,4 +1,4 @@
-import os, re, requests
+import os, re, requests, urllib.parse
 from html.parser import HTMLParser
 
 class MyrientParser(HTMLParser):
@@ -8,7 +8,10 @@ class MyrientParser(HTMLParser):
     def handle_starttag(self, tag, attrs):
         if tag == "a":
             for name, value in attrs:
-                if name == "href" and not value.startswith("?") and not value.startswith("/"):
+                if name == "href":
+                    # Ignore navigation links
+                    if value.startswith("?") or value.startswith("/") or value == "../":
+                        continue
                     self.files.append(value)
 
 def main():
@@ -37,9 +40,11 @@ def main():
                 r = requests.get(url, headers=headers)
                 parser = MyrientParser()
                 parser.feed(r.text)
-                for filename in parser.files:
+                for link in parser.files:
+                    # Decode link to check against regex
+                    filename = urllib.parse.unquote(link)
                     if re.search(region_regex, filename):
-                        f.write(f"{url}{filename}\n  dir=/data/{sys}\n  out={filename}\n")
+                        f.write(f"{url}{link}\n  dir=/data/{sys}\n  out={filename}\n")
             except Exception as e:
                 print(f"Error crawling {sys}: {e}")
 
